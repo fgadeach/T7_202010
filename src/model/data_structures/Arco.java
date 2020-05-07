@@ -3,16 +3,16 @@ package model.data_structures;
 public class Arco<K extends Comparable<K>, A>
 {
 	private K primerVertice;
-	private K segundoVertice;
+	private K ultimoVertice;
+	private Array<K> adj = new Array<K>();
 	private A info;
 
 	
-	public Arco(K primerVert,K segundoVert, A info)
+	public Arco(K primerVert,K ultimoVert, A info)
 	{
 		primerVertice = primerVert;
-		segundoVertice = segundoVert;
+		ultimoVertice = ultimoVert;
 		this.info = info;
-		
 	}
 	
 	public K darPrimerVertice()
@@ -20,9 +20,19 @@ public class Arco<K extends Comparable<K>, A>
 		return primerVertice;
 	}
 	
-	public K darSegundoVertice()
+	public K darUltimoVertice()
 	{
-		return segundoVertice;
+		return ultimoVertice;
+	}
+	
+	public Array<K> darAdj()
+	{
+		return adj;
+	}
+
+	public void agregarVerticeAdj(K idVertAdj)
+	{
+		adj.append(idVertAdj);
 	}
 	
 	public A darInfo()
@@ -34,6 +44,5 @@ public class Arco<K extends Comparable<K>, A>
 	{
 		info = newInfo;
 	}
-	
 	
 }

@@ -92,7 +92,7 @@ public class Grafo<K extends Comparable<K>, V, A> implements IGrafo<K,V,A>
 	{	
 		Vertice<K,V> vertice = vertices.get(idVertex);
 
-		return vertice.darValue();
+		return vertice.darinfo();
 	}
 
 	@Override
@@ -102,7 +102,7 @@ public class Grafo<K extends Comparable<K>, V, A> implements IGrafo<K,V,A>
 	public void setInfoVertex(K idVertex, V infoVertex) 
 	{
 		Vertice<K,V> vertice = vertices.get(idVertex);
-		vertice.setValue(infoVertex);
+		vertice.setinfo(infoVertex);
 	}
 
 	@Override
@@ -194,7 +194,8 @@ public class Grafo<K extends Comparable<K>, V, A> implements IGrafo<K,V,A>
 			}
 		}
 	}
-
+	
+	
 	public void uncheck() 
 	{
 		Iterator<K> iter = this.iterarVertices();

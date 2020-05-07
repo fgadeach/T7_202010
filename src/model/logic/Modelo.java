@@ -1,15 +1,15 @@
 package model.logic;
 
 import java.awt.List;
-
-
-
-
+import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileNotFoundException;
 
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.sql.Date;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Iterator;
@@ -20,9 +20,12 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+import model.data_structures.Arco;
 import model.data_structures.Array;
+import model.data_structures.Grafo;
 import model.data_structures.Queue;
 import model.data_structures.SeparateChainingHashST;
+import model.data_structures.Vertice;
 
 
 /**
@@ -31,63 +34,129 @@ import model.data_structures.SeparateChainingHashST;
  */
 public class Modelo {
 
-	int numeroElementos = 0;
-
 	int m = 1500;
 
-	private SeparateChainingHashST<String, Array<Comparendos>> hashSectoresSC = new SeparateChainingHashST<String, Array<Comparendos>>(m);
+	private Grafo<String, String, Double> grafo= new Grafo<String,String,Double>(m);
 
-	private Queue<Comparendos> policia = new Queue();
-
-	public void loadComparendos (String comparendosFile)
+	public void cargarGrafo (String vertices, String arcos) throws Exception
 	{
-		JSONParser parser = new JSONParser();
+		File vertice = new File(vertices);
+		File arc = new File(vertices);
 
-		try {     
-			Object obj = parser.parse(new FileReader(comparendosFile));
+		try 
+		{
+			BufferedReader bufferedReader = new BufferedReader(new FileReader(vertice));
+			BufferedReader bufferedReaderArcos = new BufferedReader(new FileReader(arcos));
+			String linea;
+			String linea2;
+			String datos[];
 
-			JSONObject jsonObject =  (JSONObject) obj;
-			JSONArray jsArray = (JSONArray) jsonObject.get("features");
+			while((linea = bufferedReader.readLine())!=null)
+			{
+				datos = linea.split(",");
+				String id = datos[0];
+				String info = datos[1]+","+datos[2];
 
-			for(Object o: jsArray) {
-				JSONObject comp = (JSONObject) o;	
-				JSONObject properties =  (JSONObject) comp.get("properties");
-				JSONObject geometry =  (JSONObject) comp.get("geometry");
-				JSONArray coordinates = (JSONArray) geometry.get("coordinates");
-				Comparendos comparendo = new Comparendos(String.valueOf(comp.get("type")), Integer.parseInt(String.valueOf(properties.get("OBJECTID"))), String.valueOf(properties.get("FECHA_HORA")),String.valueOf(properties.get("MEDIO_DETECCION")), String.valueOf(properties.get("CLASE_VEHICULO")), String.valueOf(properties.get("TIPO_SERVICIO")), String.valueOf(properties.get("INFRACCION")), String.valueOf(properties.get("DES_INFRACCION")), String.valueOf(properties.get("LOCALIDAD")),String.valueOf(properties.get("MUNICIPIO")), String.valueOf(geometry.get("type")), String.valueOf(coordinates),0,0,0);
-				String objectId = Integer.toString(comparendo.getOBJECTID());
-
-
-				String Key = comparendo.getFECHA_HORA()+comparendo.getCLASE_VEHI()+comparendo.getINFRACCION();
-
-				String coordenadas = comparendo.getFECHA_HORA();
-				String[] parts = coordenadas.split("-");
-
-				String part1 = parts[0];
-				String part2 = parts[1];
-				String part3 = parts[2];
-
-				String[] diaP = part3.split("T");		
-				int anio = Integer.parseInt(part1);		
-				int mes = Integer.parseInt(part2);
-				int dia = Integer.parseInt(diaP[0]);
-				comparendo.setDIA(dia);
-				comparendo.setMes(mes);
-				comparendo.setAnio(anio);
-
+				if(id!=null) 
+				{
+					grafo.addVertex(id, info);
+					String hola = grafo.getInfoVertex(id);
+				}
 			}
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
 
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (ParseException e){
+			while((linea2 = bufferedReaderArcos.readLine())!=null)
+			{
+
+				datos = linea2.split(" ");
+
+				for (int i = 0; i < datos.length-1; i++) 
+				{
+					if(datos[i+1]!=null) 
+					{
+						String info = grafo.getInfoVertex(datos[i]);		
+						String infoD = grafo.getInfoVertex(datos[i+1]);	
+
+						String lector[] = info.split(",");
+						double latitud = Double.parseDouble(lector[0]);
+
+						double longitud = Double.parseDouble(lector[1]);
+
+						String lectorD[] = infoD.split(",");
+						double latitudD = Double.parseDouble(lectorD[0]);
+						double longitudD = Double.parseDouble(lectorD[1]);
+
+						Haversine harv = new Haversine();
+						Double infoArc = harv.distance(latitud, longitud, latitudD, longitudD);
+						grafo.addEdge(datos[i],datos[i+1], infoArc);
+
+
+					}
+				}
+			}
+
+			bufferedReader.close();
+		} 
+		catch (FileNotFoundException e) 
+		{
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
 
+	public int numeroArcos() 
+	{
+
+		return grafo.E();
+	}
+	public int numeroVertices() 
+	{
+		return grafo.V();
+	}
+
+	@SuppressWarnings({ "unchecked"})
+	public void guardarGrafo() throws IOException 
+	{
+		JSONObject obj = new JSONObject();
 
 
+		JSONArray vertices = new JSONArray();
+		JSONArray arcos = new JSONArray();
+
+		Iterator<String> iter = grafo.iterarVertices();
+		while(iter.hasNext()) 
+		{
+			String id = iter.next();
+			String nodo = grafo.getInfoVertex(id);
+			JSONObject idJ = new JSONObject();
+
+			idJ.put("ID_VERTICE", id);
+			idJ.put("DIRECCION_VERTICE", nodo);
+			
+			vertices.add(idJ);
+		}
+
+
+		Iterator<Arco<String, Double>> iterArcos = grafo.arcos().iterator();
+
+		while(iterArcos.hasNext()) 
+		{
+			Arco<String, Double> arco = iterArcos.next();
+
+			JSONObject idJ = new JSONObject();
+			
+			idJ.put("PRIMER_VERTICE", arco.darPrimerVertice());
+			idJ.put("ULTIMO_VERTICE", arco.darUltimoVertice());
+			idJ.put("INFORMACION_ARCO", arco.darInfo().toString());		
+			arcos.add(idJ);
+		}
+
+		obj.put("Vertices", vertices);
+		obj.put("Arcos", arcos);
+
+		FileWriter fw = new FileWriter(new File("./data/comparendos.geojson"), false);
+		fw.write(obj.toJSONString());
+		fw.close();
+	}
 }
 
 
