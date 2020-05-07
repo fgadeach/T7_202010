@@ -2,7 +2,7 @@ package model.data_structures;
 
 import java.util.Iterator;
 
-public class Queue <T extends Comparable<T>> implements IQueue<T>{
+public class Queue <T> implements IQueue<T>{
 	//ATRIBUTOS
 	private int tamano;
 	private Nodo<T> primerNodo;

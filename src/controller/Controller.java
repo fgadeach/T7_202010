@@ -3,6 +3,7 @@ package controller;
 import java.io.FileReader;
 
 
+
 import java.util.Scanner;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -13,8 +14,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Iterator;
 
-import model.data_structures.ArbolRojoNegro;
-import model.data_structures.LinearProbingHashST;
 import model.data_structures.Queue;
 import model.logic.Comparendos;
 import model.logic.Modelo;
@@ -25,7 +24,7 @@ public class Controller {
 	/*
 	 * 
 	 */
-	private ArbolRojoNegro<String,Comparendos> listaComparendos;
+	
 
 	/* Instancia del Modelo*/
 	private Modelo modelo;
@@ -42,7 +41,7 @@ public class Controller {
 	 */
 	public Controller()
 	{
-		listaComparendos = new ArbolRojoNegro<String,Comparendos>();
+		//listaComparendos = new ArbolRojoNegro<String,Comparendos>();
 		view = new View();
 		modelo = new Modelo();
 	}
@@ -80,15 +79,11 @@ public class Controller {
 			case 0:
 				modelo = new Modelo(); 
 				modelo.loadComparendos(ruta);
-				modelo.datosR();
-				System.out.println("Numero actual de elementos " + modelo.numeroComparendos() + "\n---------");	
-				System.out.println("Valor minimo OBJECTID " + modelo.valorMinimoObjectId() + "\n---------");	
-				System.out.println("Valor maximo OBJECTID " + modelo.valorMaximoObjectId() + "\n---------");	
-				break;
+							break;
 			case 1:
 				System.out.println("--------- \nDar numero de comparendos de mayor gravedad a buscar: ");
 				s = lector.nextInt();
-				modelo.comparendosMayorGravedad(s);
+			
 				break;
 				
 			case 2:
@@ -97,7 +92,7 @@ public class Controller {
 				System.out.println("--------- \nDar dia: ");
 				m = lector.next();
 				try {
-					modelo.comparendosMesyDia(s, m);
+				
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -110,7 +105,7 @@ public class Controller {
 				System.out.println("--------- \nDar limite alto: ");
 				m = lector.next();
 				try {
-					modelo.comparendosFechayHora(n, m);
+					
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -120,7 +115,7 @@ public class Controller {
 			case 4:
 				System.out.println("--------- \nDar numero de comparendos mas cercanos a buscar: ");
 				s = lector.nextInt();
-				modelo.comparendosMasCercanos(s);
+		
 				break;
 				
 			case 5:
@@ -133,7 +128,7 @@ public class Controller {
 				System.out.println("--------- \nDar localidad: ");
 				p = lector.next();
 				
-				modelo.comparendosMayorDetecClaseEtc(n, m, o, p);
+				
 				break;
 				
 			case 6:
@@ -144,28 +139,28 @@ public class Controller {
 				System.out.println("--------- \nDar clase vehiculo: ");
 				o = lector.next();
 
-				modelo.comparendosRangoLatitudyTipo(n, m, o);
+			
 				break;
 			
 			case 7:
 				System.out.println("--------- \nDar d dias: ");
 				s = lector.nextInt();
 				
-				modelo.TablaAscii(s);
+			
 				break;
 				
 			case 8:
 				System.out.println("--------- \nDar d dias: ");
 				s = lector.nextInt();
 				
-				modelo.costoDeTiempo(s);
+				
 				break;
 				
 			case 9:
 				System.out.println("--------- \nTiempo actual policia: ");				
-				modelo.demoraP();
+			
 				System.out.println("--------- \nTiempo solucion: ");
-				modelo.solucion();
+			
 				break;
 
 
