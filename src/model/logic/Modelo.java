@@ -128,11 +128,13 @@ public class Modelo {
 			String id = iter.next();
 			String nodo = grafo.getInfoVertex(id);
 			JSONObject idJ = new JSONObject();
-
-			idJ.put("ID_VERTICE", id);
-			idJ.put("DIRECCION_VERTICE", nodo);
+			JSONObject vertice = new JSONObject();
 			
-			vertices.add(idJ);
+			idJ.put("ID", id);
+			idJ.put("DIRECCION", nodo);
+			
+			vertice.put("VERTICE",idJ);
+			vertices.add(vertice);
 		}
 
 
@@ -143,11 +145,15 @@ public class Modelo {
 			Arco<String, Double> arco = iterArcos.next();
 
 			JSONObject idJ = new JSONObject();
+			JSONObject arcoS = new JSONObject();
 			
 			idJ.put("PRIMER_VERTICE", arco.darPrimerVertice());
 			idJ.put("ULTIMO_VERTICE", arco.darUltimoVertice());
-			idJ.put("INFORMACION_ARCO", arco.darInfo().toString());		
-			arcos.add(idJ);
+			idJ.put("INFORMACION_ARCO", arco.darInfo().toString());	
+			
+			
+			arcoS.put("ARCO",idJ);
+			arcos.add(arcoS);
 		}
 
 		obj.put("Vertices", vertices);
