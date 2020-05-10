@@ -36,6 +36,7 @@ public class Controller {
 
 	public static final String arcos="./data/bogota_arcos.txt";
 	public static final String vertices="./data/bogota_vertices.txt";
+	public static final String jsonAV="./data/comparendos.geojson";
 	/**
 	 * Crear la vista y el modelo del proyecto
 	 * @param capacidad tamaNo inicial del arreglo
@@ -71,7 +72,16 @@ public class Controller {
 				{
 					System.out.println("no carga");
 				}
-
+				break;
+				
+			case 1:
+				
+				try {
+					modelo.loadComparendos(jsonAV);
+				} catch (Exception e) 
+				{
+					System.out.println("no carga");
+				}
 				break;
 
 			default: 

@@ -16,6 +16,7 @@ public class View
 	public void printMenu()
 	{
 		System.out.println("0. Carga de datos.");
+		System.out.println("1. Carga de grafo JSON.");
 
 	}
 

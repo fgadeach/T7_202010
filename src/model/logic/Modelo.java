@@ -37,6 +37,7 @@ public class Modelo {
 	int m = 1500;
 
 	private Grafo<String, String, Double> grafo= new Grafo<String,String,Double>(m);
+	private Grafo<Double, String, Double> grafoJ= new Grafo<Double,String,Double>(m);
 
 	public void cargarGrafo (String vertices, String arcos) throws Exception
 	{
@@ -129,10 +130,10 @@ public class Modelo {
 			String nodo = grafo.getInfoVertex(id);
 			JSONObject idJ = new JSONObject();
 			JSONObject vertice = new JSONObject();
-			
+
 			idJ.put("ID", id);
 			idJ.put("DIRECCION", nodo);
-			
+
 			vertice.put("VERTICE",idJ);
 			vertices.add(vertice);
 		}
@@ -146,12 +147,12 @@ public class Modelo {
 
 			JSONObject idJ = new JSONObject();
 			JSONObject arcoS = new JSONObject();
-			
+
 			idJ.put("PRIMER_VERTICE", arco.darPrimerVertice());
 			idJ.put("ULTIMO_VERTICE", arco.darUltimoVertice());
 			idJ.put("INFORMACION_ARCO", arco.darInfo().toString());	
-			
-			
+
+
 			arcoS.put("ARCO",idJ);
 			arcos.add(arcoS);
 		}
@@ -163,6 +164,52 @@ public class Modelo {
 		fw.write(obj.toJSONString());
 		fw.close();
 	}
+
+	public void loadComparendos (String comparendosFile)
+	{
+		JSONParser parser = new JSONParser();
+
+		try {     
+			Object obj = parser.parse(new FileReader(comparendosFile));
+
+			JSONObject jsonObject =  (JSONObject) obj;
+			JSONArray jsArray = (JSONArray) jsonObject.get("Vertices");
+			JSONArray jsArrayA = (JSONArray) jsonObject.get("Arcos");
+
+			for(Object o: jsArray) {
+				JSONObject comp = (JSONObject) o;	
+				JSONObject vertices =  (JSONObject) comp.get("VERTICE");
+
+				Vertice<Double,String> vertice = new Vertice<Double, String>(Double.parseDouble(String.valueOf(vertices.get("ID"))),String.valueOf(vertices.get("DIRECCION")));
+				grafoJ.addVertex(vertice.darKey(), vertice.darinfo());
+			}
+
+			for(Object o: jsArrayA) 
+			{
+				JSONObject comp = (JSONObject) o;	
+				JSONObject arcos =  (JSONObject) comp.get("ARCO");
+
+				Arco<Double,Double> arco = new Arco<Double,Double>(Double.parseDouble(String.valueOf(arcos.get("PRIMER_VERTICE"))),Double.parseDouble(String.valueOf(arcos.get("ULTIMO_VERTICE"))),Double.parseDouble(String.valueOf(arcos.get("INFORMACION_ARCO"))));
+				try {
+					grafoJ.addEdge(arco.darPrimerVertice(), arco.darUltimoVertice(), arco.darInfo());
+				} catch (Exception e) {
+					System.out.println("Error carga arco");
+				}
+			}
+			
+			System.out.println("numero de vertices: " + grafoJ.V());
+			System.out.println("numero de arcos: " + grafoJ.E());
+			
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (ParseException e){
+			e.printStackTrace();
+		}
+	}
+
 }
 
 
