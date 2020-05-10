@@ -14,7 +14,7 @@ public class Grafo<K extends Comparable<K>, V, A> implements IGrafo<K,V,A>
 
 	public Grafo(int n)
 	{
-		this.numeroVertices = n;
+		this.numeroVertices = 0;
 		this.numeroArcos = 0;
 		this.vertices = new SeparateChainingHashST<>(10000);
 		this.arcos = new SeparateChainingHashST<>(10000);

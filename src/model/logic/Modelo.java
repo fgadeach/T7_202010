@@ -1,6 +1,7 @@
 package model.logic;
 
 import java.awt.List;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -15,10 +16,15 @@ import java.util.Calendar;
 import java.util.Iterator;
 import java.util.Random;
 
+import javax.swing.JFrame;
+
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+
+import javax.swing.*;
+import java.awt.*;
 
 import model.data_structures.Arco;
 import model.data_structures.Array;
@@ -38,6 +44,7 @@ public class Modelo {
 
 	private Grafo<String, String, Double> grafo= new Grafo<String,String,Double>(m);
 	private Grafo<Double, String, Double> grafoJ= new Grafo<Double,String,Double>(m);
+	private Grafo<Double, String, Double> grafoP= new Grafo<Double,String,Double>(m);
 
 	public void cargarGrafo (String vertices, String arcos) throws Exception
 	{
@@ -128,6 +135,7 @@ public class Modelo {
 		{
 			String id = iter.next();
 			String nodo = grafo.getInfoVertex(id);
+			
 			JSONObject idJ = new JSONObject();
 			JSONObject vertice = new JSONObject();
 
@@ -165,12 +173,12 @@ public class Modelo {
 		fw.close();
 	}
 
-	public void loadComparendos (String comparendosFile)
+	public void loadGrafo (String grafoFile)
 	{
 		JSONParser parser = new JSONParser();
 
 		try {     
-			Object obj = parser.parse(new FileReader(comparendosFile));
+			Object obj = parser.parse(new FileReader(grafoFile));
 
 			JSONObject jsonObject =  (JSONObject) obj;
 			JSONArray jsArray = (JSONArray) jsonObject.get("Vertices");
@@ -196,10 +204,10 @@ public class Modelo {
 					System.out.println("Error carga arco");
 				}
 			}
-			
+
 			System.out.println("numero de vertices: " + grafoJ.V());
 			System.out.println("numero de arcos: " + grafoJ.E());
-			
+
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 
@@ -209,7 +217,43 @@ public class Modelo {
 			e.printStackTrace();
 		}
 	}
+	
+	public void loadGrafoPolicia (String grafoFile)
+	{
+		JSONParser parser = new JSONParser();
 
+		try {     
+			
+			Object obj = parser.parse(new FileReader(grafoFile));
+
+			JSONObject jsonObject =  (JSONObject) obj;
+			JSONArray jsArray = (JSONArray) jsonObject.get("features");
+
+			for(Object o: jsArray) {
+				JSONObject comp = (JSONObject) o;	
+				JSONObject properties =  (JSONObject) comp.get("properties");
+				JSONObject geometry =  (JSONObject) comp.get("geometry");
+				JSONArray coordinates = (JSONArray) geometry.get("coordinates");
+				String coordenadas = String.valueOf(coordinates);
+				coordenadas = coordenadas.replaceAll("\\[","");
+				coordenadas = coordenadas.replaceAll("\\]","");
+				
+				Vertice<Double,String> vertice = new Vertice<Double,String>(Double.parseDouble(String.valueOf(properties.get("OBJECTID"))), coordenadas);
+				vertice.setLaYLo();
+				grafoP.addVertex(vertice.darKey(), vertice.darinfo());
+			
+				System.out.println("OBJECTID_ESTACION: " + vertice.darKey().intValue()+" LATITUD: " + vertice.darLatitud()+" LONGITUD: "+ vertice.darLongitud());
+			}
+			System.out.println("Numero de estaciones: " + grafoP.V());
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (ParseException e){
+			e.printStackTrace();
+		}
+	}
 }
 
 

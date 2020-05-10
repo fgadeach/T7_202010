@@ -17,6 +17,7 @@ public class View
 	{
 		System.out.println("0. Carga de datos.");
 		System.out.println("1. Carga de grafo JSON.");
+		System.out.println("2. Carga Policia.");
 
 	}
 
